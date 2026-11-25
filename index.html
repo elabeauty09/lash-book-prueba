@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="LASH BOOK">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#F7F1E8">
+<title>LASH BOOK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--beige:#F7F1E8;--blanco:#FFFFFF;--champagne:#E9DCC6;--dorado:#B8975A;--texto:#3B3530;--gris:#8A8178;--alerta:#FFF3B0;--alerta-borde:#D9B93C;--peligro:#8E2A22;--linea:#E6DCCB;}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--beige);color:var(--texto);font-family:"Inter",system-ui,-apple-system,sans-serif;font-size:16px;-webkit-text-size-adjust:100%}
+h1,h2,h3{font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;margin:0}
+.wrap{max-width:720px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 40px)}
+.centro{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.card{background:var(--blanco);border:1px solid var(--linea);border-radius:14px;padding:16px;margin-bottom:14px}
+.centro .card{width:100%;max-width:360px;text-align:center}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid var(--linea);padding-bottom:12px;margin-bottom:16px}
+.brand{font-family:"Cormorant Garamond",Georgia,serif;font-size:26px;letter-spacing:.18em}
+.brand small{display:block;font-family:Inter,system-ui,sans-serif;font-size:11px;letter-spacing:.08em;color:var(--gris)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat{background:var(--blanco);border:1px solid var(--linea);border-radius:14px;padding:14px;text-align:center}
+.stat b{display:block;font-family:"Cormorant Garamond",Georgia,serif;font-size:30px;font-weight:500;color:var(--dorado)}
+.stat span{font-size:12px;color:var(--gris);letter-spacing:.04em}
+input,select,textarea{width:100%;font:inherit;font-size:16px;color:var(--texto);background:var(--blanco);border:1px solid var(--linea);border-radius:10px;padding:10px 12px;margin-top:4px;-webkit-appearance:none;appearance:none}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--dorado)}
+label{display:block;font-size:13px;color:var(--gris);margin-top:12px}
+.btn{font:inherit;min-height:40px;border:1px solid var(--dorado);background:transparent;color:var(--texto);border-radius:999px;padding:10px 18px;cursor:pointer}
+.btn.primario{background:var(--dorado);color:#fff;border-color:var(--dorado)}
+.btn.peligro{background:var(--peligro);border-color:var(--peligro);color:#fff}
+.btn.pequeno{padding:6px 12px;font-size:13px}
+.acciones{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;justify-content:flex-start}
+.letra{font-family:"Cormorant Garamond",Georgia,serif;font-size:20px;color:var(--dorado);margin:18px 0 4px;border-bottom:1px solid var(--linea)}
+.fila{display:flex;justify-content:space-between;gap:12px;padding:10px 6px;border-bottom:1px dashed var(--linea);margin:0}
+.fila dt{color:var(--gris);font-size:13px;flex:0 0 45%}
+.fila dd{margin:0;text-align:right;white-space:pre-wrap;flex:1}
+.fila.resaltada{background:var(--alerta);border-radius:8px;border-bottom-color:transparent}
+.alerta{background:var(--alerta);border:1px solid var(--alerta-borde);border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:14px}
+.badge{display:inline-block;background:var(--alerta);border:1px solid var(--alerta-borde);border-radius:999px;font-size:11px;padding:2px 8px;margin-left:6px}
+.item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 4px;border-bottom:1px solid var(--linea);cursor:pointer;min-height:40px}
+.item small{color:var(--gris)}
+.buscador{margin:6px 0 10px}
+.aviso{font-size:13px;color:var(--gris);margin:8px 0}
+.ojo{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:6px}
+.ojo label{margin:0;text-align:center;font-size:11px}
+.ojo input{text-align:center;padding:8px 2px}
+.fotos{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-top:8px}
+.fotos figure{margin:0}
+.fotos img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;border:1px solid var(--linea)}
+.fotos figcaption{font-size:11px;color:var(--gris);text-align:center}
+.cita{border:1px solid var(--linea);border-radius:12px;margin-bottom:10px;background:var(--blanco)}
+.cita summary{padding:12px 14px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:8px;min-height:40px;align-items:center}
+.cita .cuerpo{padding:0 14px 12px}
+.svg-ojo{display:block;margin:6px auto 0;width:200px;max-width:80%}
+.prevdib{width:100%;border-radius:10px;border:1px solid var(--linea);background:var(--blanco);display:block}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 20px);transform:translateX(-50%);background:var(--texto);color:#fff;padding:10px 16px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90%;text-align:center;z-index:20}
+.toast.on{opacity:1}
+.modal{position:fixed;inset:0;background:rgba(59,53,48,.45);display:flex;align-items:center;justify-content:center;padding:20px;z-index:15}
+.modal-caja{max-width:340px;width:100%;margin:0;text-align:center}
+.modal-texto{margin:0 0 14px;font-size:16px}
+.dib-ov{position:fixed;inset:0;background:var(--beige);display:flex;flex-direction:column;z-index:16;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0}
+.dib-top{padding:12px 16px;font-family:"Cormorant Garamond",Georgia,serif;font-size:22px;border-bottom:1px solid var(--linea)}
+.dib-cv{flex:1;min-height:0;width:100%;background:var(--blanco);touch-action:none;display:block}
+.dib-bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:10px;border-top:1px solid var(--linea);background:var(--blanco)}
+/* Tabletas (Galaxy Tab S10 FE) y pantallas anchas */
+@media (min-width:700px){
+  .wrap{max-width:960px}
+  .ojo label{font-size:13px}
+}
+@media (min-width:900px){
+  #form{column-count:2;column-gap:28px}
+  #form>*{break-inside:avoid}
+  #form label{break-after:avoid}
+  .fotos{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script>
+/* ===================== CONFIGURACIÓN ===================== */
+/*
+  NUBE (SUPABASE), pasos para activarla:
+  1. Crear un proyecto en Supabase.
+  2. En SQL Editor crear la tabla:
+       create table lashbook_data (id text primary key, data jsonb not null);
+  3. Crear las dos cuentas de acceso.
+  4. Configurar reglas RLS (políticas por fila) para la tabla.
+  5. Pegar abajo la URL del proyecto y la clave pública "anon".
+  ADVERTENCIA: la clave "anon" es pública y va dentro de este archivo. Sin inicio de sesión
+  y RLS bien configuradas, cualquiera que tenga este archivo puede leer y modificar la tabla.
+  Esta versión todavía no inicia sesión en Supabase; hay que agregarlo antes de guardar datos reales.
+  Mientras los campos estén vacíos, la app funciona solo en este dispositivo.
+*/
+const CONFIG = {
+  supabaseUrl: "",        // ejemplo: "https://abcdxyz.supabase.co"
+  supabaseAnonKey: "",    // clave pública "anon" de Supabase
+  table: "lashbook_data"
+};
+
+/* ===================== CATÁLOGOS Y CONSTANTES ===================== */
+const TECNICAS = ["Clásica", "Híbrida", "Volumen", "Mega volumen", "Wispy"];
+const CURVATURAS = ["C", "CC", "D", "L", "M"];
+const EFECTOS = ["Natural", "Cat eye", "Doll eye", "Squirrel", "Wispy", "Wet look"];
+const SECCIONES = [8, 9, 10, 11, 12, 13];
+const MAX_FOTOS = 5;
+
+/* ===================== DEFINICIÓN DE CAMPOS ===================== */
+const CAMPOS = [
+  {k:"alergias", l:"Alergias", t:"area", alerta:true},
+  {k:"reacciones", l:"Antecedentes de reacciones", t:"area"},
+  {k:"apellido", l:"Apellido", t:"text"},
+  {k:"comentarios", l:"Comentarios y observaciones", t:"area"},
+  {k:"telefono", l:"Contacto telefónico", t:"text"},
+  {k:"correo", l:"Correo electrónico (opcional)", t:"text"},
+  {k:"cuidados", l:"Cuidados posteriores explicados", t:"area"},
+  {k:"efecto", l:"Dirección del efecto", t:"lista", opciones: EFECTOS},
+  {k:"diseno", l:"Diseño de extensiones utilizado", t:"text"},
+  {k:"disenoDibujo", l:"Dibujo del diseño de extensiones", t:"dibujo"},
+  {k:"duracion", l:"Duración habitual de la cita", t:"text"},
+  {k:"embarazo", l:"Embarazo o lactancia", t:"text"},
+  {k:"nacimiento", l:"Fecha de nacimiento (opcional)", t:"fecha"},
+  {k:"gustos", l:"Gustos y preferencias de la clienta", t:"area"},
+  {k:"grosor", l:"Grosor utilizado", t:"text"},
+  {k:"curvatura", l:"Lifting o curvatura utilizada", t:"lista", opciones: CURVATURAS},
+  {k:"longitudes", l:"Longitudes utilizadas", t:"text"},
+  {k:"mapeoGeneral", l:"Mapeo completo de ambos ojos (notas)", t:"area"},
+  {k:"material", l:"Material y tipo de pestaña utilizado", t:"text"},
+  {k:"medidas", l:"Medidas utilizadas por sección", t:"text"},
+  {k:"medicamentos", l:"Medicamentos actuales", t:"area"},
+  {k:"nombre", l:"Nombre completo", t:"text"},
+  {k:"notas", l:"Notas adicionales", t:"area"},
+  {k:"precio", l:"Precio cobrado", t:"text"},
+  {k:"preferencias", l:"Preferencias personales (volumen, intensidad, longitud, efecto favorito, comodidad y estilos que no le gustan)", t:"area"},
+  {k:"productos", l:"Productos utilizados", t:"area"},
+  {k:"proximaCita", l:"Próxima cita sugerida", t:"fecha"},
+  {k:"recordatorio", l:"Recordatorio de retoque (días)", t:"numero"},
+  {k:"sensibilidadOcular", l:"Sensibilidad ocular", t:"area", alerta:true},
+  {k:"servicios", l:"Servicios realizados", t:"area"},
+  {k:"tecnica", l:"Técnica utilizada", t:"lista", opciones: TECNICAS},
+  {k:"lentes", l:"Uso de lentes de contacto o cirugías oculares", t:"text"}
+];
+
+const CAMPOS_CITA = [
+  {k:"fecha", l:"Fecha de la cita", t:"fecha"},
+  {k:"tecnica", l:"Técnica", t:"lista", opciones: TECNICAS},
+  {k:"diseno", l:"Diseño elegido", t:"text"},
+  {k:"disenoDibujo", l:"Dibujo del diseño elegido", t:"dibujo"},
+  {k:"curvatura", l:"Curvatura", t:"lista", opciones: CURVATURAS},
+  {k:"grosor", l:"Grosor", t:"text"},
+  {k:"longitudes", l:"Longitudes", t:"text"},
+  {k:"tipoFibras", l:"Tipo de fibras", t:"text"},
+  {k:"adhesivo", l:"Adhesivo utilizado", t:"text"},
+  {k:"retencion", l:"Observaciones sobre retención", t:"area"},
+  {k:"duracion", l:"Duración de la cita", t:"text"},
+  {k:"precio", l:"Precio cobrado", t:"text"}
+];
+
+/* ===================== ESTADO ===================== */
+let db = {version:0, nextFolio:1, clientas:[]};
+let auth = null;            // { salt, hash } o null
+let vista = {n:"inicio", id:null};
+let busqueda = "";
+let fotosNuevas = [];       // [{tipo, src}]
+let baseVersion = 0;        // última versión sincronizada con la nube (o cargada localmente)
+
+/* ===================== UTILIDADES ===================== */
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const hoy = () => new Date().toLocaleDateString("en-CA");
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const buscar = id => db.clientas.find(c => c.id === id);
+const porLetra = (a, b) => String(a).localeCompare(String(b), "es", {sensitivity: "base"});
+const aHex = bytes => [...bytes].map(x => x.toString(16).padStart(2, "0")).join("");
+const deHex = h => Uint8Array.from(h.match(/.{2}/g).map(x => parseInt(x, 16)));
+const ultimaCita = c => [...(c.citas || [])].sort((a, b) => b.fecha.localeCompare(a.fecha))[0] || null;
+function proximoRetoque(c){
+  const u = ultimaCita(c);
+  if (!u || c.recordatorio === "" || c.recordatorio == null) return null;
+  const d = new Date(u.fecha + "T12:00:00");
+  d.setDate(d.getDate() + Number(c.recordatorio));
+  return d.toLocaleDateString("en-CA");
+}
+function toast(m){
+  const t = document.getElementById("toast");
+  t.textContent = m;
+  t.classList.add("on");
+  clearTimeout(window._tt);
+  window._tt = setTimeout(() => t.classList.remove("on"), 2600);
+}
+
+/* Diálogos propios (el diálogo nativo del navegador está prohibido aquí: se bloquea en vistas embebidas) */
+function pregunta(texto, si = "Sí, continuar", no = "Cancelar"){
+  return new Promise(res => {
+    const ov = document.createElement("div");
+    ov.className = "modal";
+    ov.innerHTML = `<div class="card modal-caja"><p class="modal-texto"></p><div class="acciones" style="justify-content:center"><button class="btn" data-r="0"></button><button class="btn peligro" data-r="1"></button></div></div>`;
+    ov.querySelector(".modal-texto").textContent = texto;
+    ov.querySelector('[data-r="0"]').textContent = no;
+    ov.querySelector('[data-r="1"]').textContent = si;
+    ov.addEventListener("click", e => {
+      const b = e.target.closest("[data-r]");
+      if (!b) return;
+      ov.remove();
+      res(b.dataset.r === "1");
+    });
+    document.body.appendChild(ov);
+  });
+}
+async function doble(a, b){ return (await pregunta(a)) && (await pregunta(b)); }
+
+/* ===================== MIGRACIÓN (rellena campos faltantes) ===================== */
+const VACIO_MAPEO = () => Object.fromEntries(SECCIONES.map(s => [String(s), ""]));
+function normalizarCita(ct){
+  const o = {...ct};
+  CAMPOS_CITA.forEach(f => { if (o[f.k] == null) o[f.k] = ""; });
+  o.mapeoDer = {...VACIO_MAPEO(), ...(ct.mapeoDer || {})};
+  o.mapeoIzq = {...VACIO_MAPEO(), ...(ct.mapeoIzq || {})};
+  o.fotos = Array.isArray(ct.fotos) ? ct.fotos : [];
+  return o;
+}
+function normalizarClienta(c){
+  const o = {...c};
+  CAMPOS.forEach(f => { if (o[f.k] == null) o[f.k] = ""; });
+  if (o.recordatorio !== "" && o.recordatorio != null) o.recordatorio = Number(o.recordatorio);
+  o.citas = (c.citas || []).map(normalizarCita);
+  return o;
+}
+function normalizarDB(d){
+  const clientas = (Array.isArray(d.clientas) ? d.clientas : []).map(normalizarClienta);
+  const maxFolio = clientas.reduce((m, c) => Math.max(m, Number(c.folio) || 0), 0);
+  return {
+    version: Number(d.version) || 0,
+    nextFolio: Math.max(Number(d.nextFolio) || 1, maxFolio + 1),
+    clientas
+  };
+}
+
+/* ===================== INDEXEDDB ===================== */
+let dbPromesa = null;
+function idbOpen(){
+  if (!dbPromesa) {
+    dbPromesa = new Promise((res, rej) => {
+      if (!window.indexedDB) return rej(new Error("sin indexedDB"));
+      const r = indexedDB.open("lashbook", 1);
+      r.onupgradeneeded = () => r.result.createObjectStore("kv");
+      r.onsuccess = () => res(r.result);
+      r.onerror = () => rej(r.error);
+    });
+  }
+  return dbPromesa;
+}
+async function idbGet(k){
+  const d = await idbOpen();
+  return new Promise((res, rej) => {
+    const t = d.transaction("kv").objectStore("kv").get(k);
+    t.onsuccess = () => res(t.result);
+    t.onerror = () => rej(t.error);
+  });
+}
+async function idbSet(k, v){
+  const d = await idbOpen();
+  return new Promise((res, rej) => {
+    const t = d.transaction("kv", "readwrite");
+    t.objectStore("kv").put(v, k);
+    t.oncomplete = () => res();
+    t.onerror = () => rej(t.error);
+  });
+}
+
+/* ===================== NUBE (SUPABASE) ===================== */
+const nubeOn = () => Boolean(CONFIG.supabaseUrl && CONFIG.supabaseAnonKey);
+const nubeHeaders = (extra = {}) => ({
+  apikey: CONFIG.supabaseAnonKey,
+  Authorization: "Bearer " + CONFIG.supabaseAnonKey,
+  "Content-Type": "application/json",
+  ...extra
+});
+async function nubeLeer(){
+  const r = await fetch(`${CONFIG.supabaseUrl}/rest/v1/${CONFIG.table}?id=eq.main&select=data`, {headers: nubeHeaders()});
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  const f = await r.json();
+  return f[0] ? f[0].data : null;
+}
+async function nubeEscribir(){
+  const r = await fetch(`${CONFIG.supabaseUrl}/rest/v1/${CONFIG.table}?on_conflict=id`, {
+    method: "POST",
+    headers: nubeHeaders({Prefer: "resolution=merge-duplicates"}),
+    body: JSON.stringify([{id: "main", data: db}])
+  });
+  if (!r.ok) throw new Error("HTTP " + r.status);
+}
+
+/* ===================== CONTRASEÑA ===================== */
+async function derivar(pw, saltHex){
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveBits"]);
+  const bits = await crypto.subtle.deriveBits({name: "PBKDF2", salt: deHex(saltHex), iterations: 200000, hash: "SHA-256"}, key, 256);
+  return aHex(new Uint8Array(bits));
+}
+
+/* ===================== CARGA Y GUARDADO ===================== */
+async function cargar(){
+  try {
+    const local = await idbGet("db");
+    if (local) db = normalizarDB(local);
+  } catch (e) { /* sin datos locales todavía */ }
+  if (nubeOn()) {
+    try {
+      const remoto = await nubeLeer();
+      if (remoto && (Number(remoto.version) || 0) > (db.version || 0)) {
+        db = normalizarDB(remoto);
+        await idbSet("db", db);
+      }
+    } catch (e) {
+      toast("Sin conexión a la nube; se usan los datos de este teléfono");
+    }
+  }
+  baseVersion = db.version || 0;
+  vista = {n: "inicio", id: null};
+  render();
+  avisosRetoque();
+}
+
+/* Devuelve true si se guardó. Devuelve false si la nube tenía cambios nuevos y la usuaria eligió cargarlos. */
+async function guardar(){
+  db.version = (db.version || 0) + 1;
+  try {
+    await idbSet("db", db);
+  } catch (e) {
+    toast("No se pudo guardar en este dispositivo");
+    return false;
+  }
+  if (!nubeOn()) { baseVersion = db.version; return true; }
+  try {
+    const remoto = await nubeLeer();
+    const versionRemota = remoto ? (Number(remoto.version) || 0) : 0;
+    if (versionRemota > baseVersion) {
+      const usarNube = await pregunta(
+        "La nube tiene cambios hechos desde otro dispositivo. ¿Qué quieres hacer?",
+        "Cargar la de la nube",
+        "Guardar mi versión"
+      );
+      if (usarNube) {
+        db = normalizarDB(remoto);
+        await idbSet("db", db);
+        baseVersion = db.version;
+        render();
+        toast("Se cargaron los cambios de la nube. Tu último cambio no se guardó.");
+        return false;
+      }
+      db.version = Math.max(versionRemota, db.version) + 1;
+      await idbSet("db", db);
+    }
+    await nubeEscribir();
+    baseVersion = db.version;
+  } catch (e) {
+    toast("Guardado en este teléfono; la nube no respondió");
+  }
+  return true;
+}
+
+/* ===================== ACCESO ===================== */
+function renderLock(){
+  const configurando = !auth;
+  document.getElementById("app").innerHTML = `
+  <div class="centro"><div class="card">
+    <div class="brand" style="display:block;text-align:center">LASH BOOK</div>
+    <p class="aviso">${configurando ? "Crea la contraseña de acceso. La usarán las dos personas. Mínimo 6 caracteres." : "Escribe la contraseña para entrar."}</p>
+    <label for="pw">Contraseña</label>
+    <input type="password" id="pw" autocomplete="${configurando ? "new-password" : "current-password"}">
+    ${configurando ? `<label for="pw2">Confirmar contraseña</label><input type="password" id="pw2" autocomplete="new-password">` : ""}
+    <div class="acciones" style="justify-content:center"><button class="btn primario" id="btn-entrar">${configurando ? "Crear y entrar" : "Entrar"}</button></div>
+  </div></div>`;
+  document.getElementById("btn-entrar").onclick = entrar;
+  document.getElementById("pw").onkeydown = e => { if (e.key === "Enter") entrar(); };
+  const pw2 = document.getElementById("pw2");
+  if (pw2) pw2.onkeydown = e => { if (e.key === "Enter") entrar(); };
+}
+function pantallaError(texto){
+  document.getElementById("app").innerHTML = `<div class="centro"><div class="card"><div class="brand" style="display:block;text-align:center">LASH BOOK</div><p class="aviso">${esc(texto)}</p></div></div>`;
+}
+async function entrar(){
+  const pw = document.getElementById("pw").value;
+  if (!auth) {
+    if (pw.length < 6) return toast("Mínimo 6 caracteres");
+    if (pw !== document.getElementById("pw2").value) return toast("Las contraseñas no coinciden");
+    const salt = aHex(crypto.getRandomValues(new Uint8Array(16)));
+    const nueva = {salt, hash: await derivar(pw, salt)};
+    try { await idbSet("auth", nueva); } catch (e) { return toast("No se pudo guardar la contraseña en este dispositivo"); }
+    auth = nueva;
+  } else {
+    const h = await derivar(pw, auth.salt);
+    if (h !== auth.hash) return toast("Contraseña incorrecta");
+  }
+  await cargar();
+}
+function cerrar(){ vista = {n: "inicio", id: null}; renderLock(); }
+
+/* ===================== RENDER Y NAVEGACIÓN ===================== */
+function render(){
+  let h;
+  if (vista.n === "ficha") h = vistaFicha(vista.id);
+  else if (vista.n === "editar") h = vistaEditar(vista.id);
+  else if (vista.n === "cita") h = vistaCita(vista.id);
+  else h = vistaInicio();
+  document.getElementById("app").innerHTML = `<div class="wrap">${h}</div>`;
+}
+function ir(n, id = null){ vista = {n, id}; render(); window.scrollTo(0, 0); }
+
+/* ===================== INICIO ===================== */
+function listaHTML(){
+  const q = busqueda.trim().toLowerCase();
+  const lista = db.clientas
+    .filter(c => !q || [c.nombre, c.apellido, String(c.folio), c.telefono].join(" ").toLowerCase().includes(q))
+    .sort((a, b) => porLetra(a.nombre, b.nombre) || porLetra(a.apellido, b.apellido));
+  if (!lista.length) {
+    return `<p class="aviso" style="text-align:center;padding:20px">${db.clientas.length ? "Ninguna clienta coincide con la búsqueda." : "Sin clientas registradas todavía."}</p>`;
+  }
+  let html = "", letraAct = "";
+  lista.forEach(c => {
+    const ini = (c.nombre || "#").charAt(0).toUpperCase();
+    if (ini !== letraAct) { letraAct = ini; html += `<div class="letra">${esc(ini)}</div>`; }
+    const alerta = (c.alergias || c.sensibilidadOcular) ? `<span class="badge">⚠ Alerta</span>` : "";
+    const due = proximoRetoque(c);
+    const retoque = due && due <= hoy() ? `<span class="badge">Retoque</span>` : "";
+    html += `<div class="item" onclick="ir('ficha','${c.id}')">
+      <div><b style="font-weight:500">${esc(c.nombre)} ${esc(c.apellido)}</b>${alerta}${retoque}<br>
+      <small>Expediente N° ${esc(c.folio)}${c.telefono ? " · " + esc(c.telefono) : ""}</small></div>
+      <span style="color:var(--dorado)">›</span></div>`;
+  });
+  return html;
+}
+function pintarLista(){ const el = document.getElementById("lista"); if (el) el.innerHTML = listaHTML(); }
+
+function vistaInicio(){
+  const total = db.clientas.length;
+  const citas = db.clientas.reduce((s, c) => s + c.citas.length, 0);
+  return `
+  <header class="top"><div class="brand">LASH BOOK<small>Expedientes de clientas</small></div>
+    <button class="btn pequeno" onclick="cerrar()">Bloquear</button></header>
+  <div class="stats">
+    <div class="stat"><b>${total}</b><span>Clientas registradas</span></div>
+    <div class="stat"><b>${citas}</b><span>Citas realizadas</span></div>
+  </div>
+  <p class="aviso">${nubeOn() ? "Sincronizado con la nube." : "Guardado solo en este teléfono. Falta configurar la nube para compartir."}</p>
+  <div class="acciones">
+    <button class="btn primario" onclick="ir('editar',null)">+ Nueva clienta</button>
+    <button class="btn pequeno" onclick="activarAvisos()">Activar avisos de retoque</button>
+    <button class="btn pequeno" onclick="respaldar()">Copiar respaldo</button>
+    <button class="btn pequeno" onclick="document.getElementById('restaurar').click()">Restaurar respaldo</button>
+    <input type="file" id="restaurar" accept="application/json,.json" hidden onchange="restaurar(this)">
+  </div>
+  <input class="buscador" placeholder="Buscar por nombre, apellido, folio o teléfono" value="${esc(busqueda)}" oninput="busqueda=this.value;pintarLista()">
+  <div id="lista">${listaHTML()}</div>`;
+}
+
+/* ===================== FORMULARIOS DE CAMPO ===================== */
+function campoHTML(f, val){
+  const nom = `data-campo="${f.k}"`;
+  const lbl = `<label>${esc(f.l)}</label>`;
+  if (f.t === "area") return `${lbl}<textarea ${nom}>${esc(val)}</textarea>`;
+  if (f.t === "fecha") return `${lbl}<input type="date" ${nom} value="${esc(val)}">`;
+  if (f.t === "numero") return `${lbl}<input type="number" min="0" inputmode="numeric" ${nom} value="${esc(val)}">`;
+  if (f.t === "lista") {
+    return `${lbl}<input type="text" ${nom} list="dl-${f.k}" placeholder="Escribe libremente o elige una sugerencia" value="${esc(val)}">
+      <datalist id="dl-${f.k}">${f.opciones.map(o => `<option value="${esc(o)}"></option>`).join("")}</datalist>`;
+  }
+  if (f.t === "dibujo") {
+    return `${lbl}
+      <div id="prev-${f.k}">${val ? `<img class="prevdib" src="${esc(val)}" alt="Dibujo del diseño">` : `<p class="aviso">Sin dibujo todavía</p>`}</div>
+      <div class="acciones">
+        <button type="button" class="btn primario pequeno" id="btn-${f.k}" onclick="abrirDibujo('${f.k}')">${val ? "Editar dibujo" : "Crear dibujo"}</button>
+        <button type="button" class="btn pequeno" id="quit-${f.k}" onclick="quitarDibujo('${f.k}')" style="display:${val ? "" : "none"}">Quitar dibujo</button>
+      </div>
+      <input type="hidden" ${nom} value="${esc(val)}">`;
+  }
+  return `${lbl}<input type="text" ${nom} value="${esc(val)}">`;
+}
+function leerCampos(root){
+  const out = {};
+  root.querySelectorAll("[data-campo]").forEach(el => { out[el.dataset.campo] = el.value.trim(); });
+  return out;
+}
+function ojoHTML(titulo, nombre){
+  return `<div class="card" style="margin:10px 0">
+    <b style="font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;font-weight:500">${titulo}</b>
+    <svg class="svg-ojo" viewBox="0 0 200 80" aria-hidden="true"><path d="M10 40 Q100 -10 190 40 Q100 90 10 40Z" fill="none" stroke="#B8975A" stroke-width="1.5"/><circle cx="100" cy="40" r="14" fill="none" stroke="#E6DCCB"/></svg>
+    <div class="ojo">${SECCIONES.map(s => `<div><label>${s} mm</label><input type="number" step="0.5" inputmode="decimal" data-map="${nombre}" data-sec="${s}"></div>`).join("")}</div>
+  </div>`;
+}
+
+/* ===================== EDITAR EXPEDIENTE ===================== */
+function vistaEditar(id){
+  const c = id ? buscar(id) : {};
+  if (id && !c) return noEncontrado();
+  const campos = [...CAMPOS].sort((a, b) => porLetra(a.l, b.l)).map(f => campoHTML(f, c[f.k] ?? "")).join("");
+  return `
+  <header class="top"><div class="brand">${id ? "Editar expediente" : "Nueva clienta"}</div>
+    <button class="btn pequeno" onclick="${id ? `ir('ficha','${id}')` : "ir('inicio')"}">Cancelar</button></header>
+  ${id ? `<p class="aviso">Expediente N° ${esc(c.folio)}</p>` : ""}
+  <div class="card" id="form">${campos}</div>
+  <div class="acciones"><button class="btn primario" onclick="guardarExpediente('${id || ""}')">Guardar cambios</button></div>`;
+}
+async function guardarExpediente(id){
+  const datos = leerCampos(document.getElementById("form"));
+  if (!datos.nombre) return toast("Escribe el nombre");
+  let c;
+  if (id) {
+    c = buscar(id);
+    Object.assign(c, datos);
+  } else {
+    c = normalizarClienta({id: uid(), folio: db.nextFolio, citas: [], ...datos});
+    db.nextFolio += 1;
+    db.clientas.push(c);
+  }
+  if (!(await guardar())) return;
+  toast("Expediente guardado");
+  ir("ficha", c.id);
+}
+
+/* ===================== FICHA ===================== */
+function detalleCita(ct){
+  const filas = [["Técnica", ct.tecnica], ["Diseño", ct.diseno], ["Curvatura", ct.curvatura], ["Grosor", ct.grosor],
+    ["Longitudes", ct.longitudes], ["Tipo de fibras", ct.tipoFibras], ["Adhesivo", ct.adhesivo],
+    ["Retención", ct.retencion], ["Duración", ct.duracion], ["Precio", ct.precio]];
+  const ojo = (t, m) => `<dl class="fila"><dt>${t}</dt><dd>${SECCIONES.map(s => `${s} mm: ${esc(m[s] || "—")}`).join("<br>")}</dd></dl>`;
+  return filas.map(([a, b]) => `<dl class="fila"><dt>${a}</dt><dd>${esc(b) || "—"}</dd></dl>`).join("")
+    + (ct.disenoDibujo ? `<img src="${esc(ct.disenoDibujo)}" alt="Dibujo del diseño" style="width:100%;border-radius:10px;border:1px solid var(--linea);margin:6px 0">` : "")
+    + ojo("Ojo derecho", ct.mapeoDer) + ojo("Ojo izquierdo", ct.mapeoIzq)
+    + (ct.fotos.length ? `<div class="fotos">${ct.fotos.map(f => `<figure><img src="${esc(f.src)}" alt="${esc(f.tipo)}"><figcaption>${esc(f.tipo)}</figcaption></figure>`).join("")}</div>` : "");
+}
+function noEncontrado(){
+  return `<p>Expediente no encontrado.</p><div class="acciones"><button class="btn" onclick="ir('inicio')">Volver</button></div>`;
+}
+function vistaFicha(id){
+  const c = buscar(id);
+  if (!c) return noEncontrado();
+  const u = ultimaCita(c);
+  const due = proximoRetoque(c);
+  const alertas = [
+    c.alergias && `<b>ALERGIAS:</b> ${esc(c.alergias)}`,
+    c.sensibilidadOcular && `<b>SENSIBILIDAD OCULAR:</b> ${esc(c.sensibilidadOcular)}`
+  ].filter(Boolean);
+  const filas = [
+    ...CAMPOS.map(f => ({l: f.l, v: c[f.k] || "", alerta: Boolean(f.alerta), t: f.t})),
+    {l: "Fecha de la última aplicación", v: u ? u.fecha : "", alerta: false, t: "texto"}
+  ].sort((a, b) => porLetra(a.l, b.l));
+  let html = "", letra = "";
+  filas.forEach(r => {
+    const ini = r.l.charAt(0).toUpperCase();
+    if (ini !== letra) { letra = ini; html += `<div class="letra">${esc(ini)}</div>`; }
+    const contenido = r.t === "dibujo"
+      ? (r.v ? `<img src="${esc(r.v)}" alt="Dibujo del diseño" style="width:100%;border-radius:10px;border:1px solid var(--linea)">` : "—")
+      : (esc(r.v) || "—");
+    html += `<dl class="fila ${r.alerta && r.v ? "resaltada" : ""}"><dt>${esc(r.l)}</dt><dd>${contenido}</dd></dl>`;
+  });
+  const citas = [...c.citas].sort((a, b) => b.fecha.localeCompare(a.fecha));
+  const hist = citas.map(ct => `<details class="cita"><summary><span>${esc(ct.fecha)} · ${esc(ct.tecnica || "Sin técnica")}</span><span style="color:var(--dorado)">Ver</span></summary>
+    <div class="cuerpo">${detalleCita(ct)}<div class="acciones"><button class="btn peligro pequeno" onclick="borrarCita('${c.id}','${ct.id}')">Borrar cita</button></div></div></details>`).join("")
+    || `<p class="aviso">Sin citas registradas.</p>`;
+  return `
+  <header class="top"><button class="btn pequeno" onclick="ir('inicio')">← Volver</button>
+    <div class="acciones" style="margin:0"><button class="btn pequeno" onclick="ir('editar','${c.id}')">Editar</button></div></header>
+  <h2>${esc(c.nombre)} ${esc(c.apellido)}</h2>
+  <p class="aviso">Expediente N° ${esc(c.folio)}${due ? " · Próximo retoque: " + esc(due) : ""}</p>
+  ${alertas.length ? `<div class="alerta">${alertas.join("<br>")}</div>` : ""}
+  <div class="acciones">
+    <button class="btn primario" onclick="ir('cita','${c.id}')">+ Nueva cita</button>
+    <button class="btn peligro" onclick="borrarExpediente('${c.id}')">Borrar expediente</button>
+  </div>
+  <div class="card">${html}</div>
+  <h3 style="margin:18px 0 6px">Historial de citas</h3>
+  ${hist}`;
+}
+
+/* ===================== NUEVA CITA ===================== */
+function vistaCita(id){
+  const c = buscar(id);
+  if (!c) return noEncontrado();
+  fotosNuevas = [];
+  const campos = CAMPOS_CITA.map(f => campoHTML(f, f.k === "fecha" ? hoy() : "")).join("");
+  return `
+  <header class="top"><div class="brand">Nueva cita</div>
+    <button class="btn pequeno" onclick="ir('ficha','${id}')">Cancelar</button></header>
+  <p class="aviso">${esc(c.nombre)} ${esc(c.apellido)} · Expediente N° ${esc(c.folio)}</p>
+  <div class="card" id="form">${campos}</div>
+  ${ojoHTML("Ojo derecho", "der")}
+  ${ojoHTML("Ojo izquierdo", "izq")}
+  <div class="card">
+    <b style="font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;font-weight:500">Fotografías (máximo ${MAX_FOTOS})</b>
+    <label for="tipoFoto">Tipo de foto</label>
+    <select id="tipoFoto"><option>Antes del ojo</option><option>Resultado final</option></select>
+    <input type="file" accept="image/*" multiple onchange="agregarFotos(this)" style="margin-top:8px">
+    <div class="fotos" id="previas"></div>
+  </div>
+  <div class="acciones"><button class="btn primario" onclick="guardarCita('${id}')">Guardar cita</button></div>`;
+}
+/* Reduce la imagen a 900 px de lado mayor y la guarda como JPEG (ahorra espacio en iPhone y en la nube) */
+function comprimir(file){
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, 900 / Math.max(img.width, img.height));
+      const cv = document.createElement("canvas");
+      cv.width = Math.round(img.width * k);
+      cv.height = Math.round(img.height * k);
+      cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
+      URL.revokeObjectURL(url);
+      res(cv.toDataURL("image/jpeg", 0.75));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error("imagen no válida")); };
+    img.src = url;
+  });
+}
+async function agregarFotos(input){
+  const archivos = [...input.files];
+  input.value = "";
+  const quedan = MAX_FOTOS - fotosNuevas.length;
+  if (quedan <= 0) return toast("Máximo 5 fotos por cita");
+  const tipo = document.getElementById("tipoFoto").value;
+  for (const f of archivos.slice(0, quedan)) {
+    try { fotosNuevas.push({tipo, src: await comprimir(f)}); }
+    catch (e) { toast("Una foto no se pudo leer"); }
+  }
+  if (archivos.length > quedan) toast("Solo se agregaron hasta 5 fotos");
+  pintarFotos();
+}
+function pintarFotos(){
+  document.getElementById("previas").innerHTML = fotosNuevas.map((f, i) =>
+    `<figure><img src="${esc(f.src)}" alt="${esc(f.tipo)}"><figcaption>${esc(f.tipo)} <a href="#" onclick="quitarFoto(${i});return false">✕</a></figcaption></figure>`).join("");
+}
+function quitarFoto(i){ fotosNuevas.splice(i, 1); pintarFotos(); }
+async function guardarCita(id){
+  const d = leerCampos(document.getElementById("form"));
+  if (!d.fecha) return toast("Falta la fecha");
+  const mapeo = nom => Object.fromEntries([...document.querySelectorAll(`[data-map="${nom}"]`)].map(i => [i.dataset.sec, i.value.trim()]));
+  const c = buscar(id);
+  c.citas.push(normalizarCita({id: uid(), ...d, mapeoDer: mapeo("der"), mapeoIzq: mapeo("izq"), fotos: fotosNuevas}));
+  fotosNuevas = [];
+  if (!(await guardar())) return;
+  toast("Cita guardada");
+  ir("ficha", id);
+}
+
+/* ===================== BORRADOS (doble confirmación) ===================== */
+async function borrarCita(cid, tid){
+  if (!(await doble("¿Borrar esta cita?", "Se eliminará del historial. ¿Confirmas de nuevo?"))) return;
+  const c = buscar(cid);
+  c.citas = c.citas.filter(x => x.id !== tid);
+  if (!(await guardar())) return;
+  toast("Cita borrada");
+  render();
+}
+async function borrarExpediente(id){
+  if (!(await doble("¿Borrar el expediente completo de esta clienta?", "Se eliminarán sus datos y todas sus citas. ¿Confirmas de nuevo?"))) return;
+  db.clientas = db.clientas.filter(x => x.id !== id);
+  if (!(await guardar())) return;
+  toast("Expediente borrado");
+  ir("inicio");
+}
+
+/* ===================== RESPALDO Y RESTAURACIÓN ===================== */
+async function respaldar(){
+  try {
+    await navigator.clipboard.writeText(JSON.stringify(db));
+    toast("Respaldo copiado. Pégalo en Notas o en un correo para guardarlo.");
+  } catch (e) {
+    toast("No se pudo copiar el respaldo en este navegador");
+  }
+}
+async function restaurar(input){
+  const file = input.files[0];
+  input.value = "";
+  if (!file) return;
+  if (!(await doble("¿Reemplazar TODOS los datos con este respaldo?", "Los datos actuales se sustituirán. ¿Confirmas de nuevo?"))) return;
+  try {
+    const d = JSON.parse(await file.text());
+    if (!d || !Array.isArray(d.clientas)) throw new Error("formato");
+    db = normalizarDB(d);
+  } catch (e) {
+    return toast("Archivo de respaldo no válido");
+  }
+  if (!(await guardar())) return;
+  toast("Respaldo restaurado");
+  ir("inicio");
+}
+
+/* ===================== DIBUJO DEL DISEÑO ===================== */
+function abrirDibujo(k){
+  const hidden = document.querySelector(`[data-campo="${k}"]`);
+  const ov = document.createElement("div");
+  ov.className = "dib-ov";
+  ov.innerHTML = `<div class="dib-top">Dibujo del diseño</div>
+    <canvas class="dib-cv" aria-label="Área de dibujo"></canvas>
+    <div class="dib-bar">
+      <button type="button" class="btn pequeno" data-a="undo">Retroceder</button>
+      <button type="button" class="btn pequeno" data-a="clear">Borrar todo</button>
+      <button type="button" class="btn pequeno" data-a="cancel">Cancelar</button>
+      <button type="button" class="btn primario pequeno" data-a="ok">Listo y guardar</button>
+    </div>`;
+  document.body.appendChild(ov);
+  const cv = ov.querySelector("canvas");
+  cv.width = cv.clientWidth * 2;
+  cv.height = cv.clientHeight * 2;
+  const ctx = cv.getContext("2d");
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, cv.width, cv.height);
+  ctx.lineWidth = 5; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.strokeStyle = "#3B3530";
+  if (hidden && hidden.value) {
+    const img = new Image();
+    img.onload = () => ctx.drawImage(img, 0, 0, cv.width, cv.height);
+    img.src = hidden.value;
+  }
+  const pila = [];
+  let ultimo = null, activo = null, ultimoLapiz = 0;
+  const pos = e => {
+    const r = cv.getBoundingClientRect();
+    return {x: (e.clientX - r.left) * cv.width / r.width, y: (e.clientY - r.top) * cv.height / r.height};
+  };
+  /* S Pen: el trazo usa la presión. Mientras se usa el lápiz se ignoran toques de la mano (palma). */
+  cv.onpointerdown = e => {
+    if (activo !== null) return;
+    if (e.pointerType === "touch" && Date.now() - ultimoLapiz < 1500) return;
+    if (e.pointerType === "pen") ultimoLapiz = Date.now();
+    pila.push(ctx.getImageData(0, 0, cv.width, cv.height));
+    if (pila.length > 30) pila.shift();
+    activo = e.pointerId;
+    ultimo = pos(e);
+    cv.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  };
+  cv.onpointermove = e => {
+    if (e.pointerId !== activo) return;
+    if (e.pointerType === "pen") ultimoLapiz = Date.now();
+    const p = pos(e);
+    ctx.lineWidth = e.pointerType === "pen" ? 3 + (e.pressure || 0.5) * 9 : 5;
+    ctx.beginPath();
+    ctx.moveTo(ultimo.x, ultimo.y);
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+    ultimo = p;
+    e.preventDefault();
+  };
+  cv.onpointerup = () => { activo = null; };
+  cv.onpointercancel = () => { activo = null; };
+  ov.addEventListener("click", e => {
+    const b = e.target.closest("[data-a]");
+    if (!b) return;
+    const a = b.dataset.a;
+    if (a === "undo") {
+      if (!pila.length) return toast("No hay trazos que deshacer");
+      ctx.putImageData(pila.pop(), 0, 0);
+    } else if (a === "clear") {
+      pila.push(ctx.getImageData(0, 0, cv.width, cv.height));
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, cv.width, cv.height);
+    } else if (a === "cancel") {
+      ov.remove();
+    } else if (a === "ok") {
+      guardarDibujo(k, cv.toDataURL("image/jpeg", 0.8));
+      ov.remove();
+    }
+  });
+}
+function guardarDibujo(k, data){
+  document.querySelector(`[data-campo="${k}"]`).value = data;
+  document.getElementById("prev-" + k).innerHTML = `<img class="prevdib" src="${data}" alt="Dibujo del diseño">`;
+  document.getElementById("btn-" + k).textContent = "Editar dibujo";
+  document.getElementById("quit-" + k).style.display = "";
+  toast("Dibujo guardado");
+}
+function quitarDibujo(k){
+  document.querySelector(`[data-campo="${k}"]`).value = "";
+  document.getElementById("prev-" + k).innerHTML = `<p class="aviso">Sin dibujo todavía</p>`;
+  document.getElementById("btn-" + k).textContent = "Crear dibujo";
+  document.getElementById("quit-" + k).style.display = "none";
+}
+
+/* ===================== AVISOS DE RETOQUE ===================== */
+/* Solo aparecen con la app abierta. En iPhone el constructor de Notification puede no estar disponible
+   en la página; se verifica en el dispositivo real. Sin aviso visible, la app sigue funcionando. */
+async function activarAvisos(){
+  if (!("Notification" in window)) {
+    return toast("Este navegador no permite avisos. En iPhone, agrega la app a la pantalla de inicio.");
+  }
+  try {
+    const p = await Notification.requestPermission();
+    toast(p === "granted" ? "Avisos activados" : "Avisos no permitidos");
+  } catch (e) {
+    toast("Este navegador no permite avisos");
+  }
+}
+function avisosRetoque(){
+  try {
+    if (!("Notification" in window) || Notification.permission !== "granted") return;
+    const clave = "lb_aviso_" + hoy();
+    if (localStorage.getItem(clave)) return;
+    const vencen = db.clientas.filter(c => { const d = proximoRetoque(c); return d && d <= hoy(); });
+    if (!vencen.length) return;
+    localStorage.setItem(clave, "1");
+    new Notification("LASH BOOK", {body: "Retoque pendiente: " + vencen.map(c => c.nombre).join(", ")});
+  } catch (e) { /* navegador sin soporte: no rompe la app */ }
+}
+
+/* ===================== ARRANQUE ===================== */
+(async () => {
+  if (!window.isSecureContext || !window.crypto || !window.crypto.subtle) {
+    return pantallaError("Esta app necesita abrirse desde una dirección segura (https). Pide ayuda para publicarla.");
+  }
+  if (!window.indexedDB) {
+    return pantallaError("Este navegador no permite guardar datos. Usa Safari o Chrome actualizados.");
+  }
+  try {
+    auth = await idbGet("auth");
+  } catch (e) {
+    return pantallaError("Este navegador no permite guardar datos. Usa Safari o Chrome actualizados.");
+  }
+  renderLock();
+})();
+</script>
+</body>
+</html>
