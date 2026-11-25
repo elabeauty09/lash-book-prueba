@@ -88,21 +88,16 @@ label{display:block;font-size:13px;color:var(--gris);margin-top:12px}
 <script>
 /* ===================== CONFIGURACIÓN ===================== */
 /*
-  NUBE (SUPABASE), pasos para activarla:
-  1. Crear un proyecto en Supabase.
-  2. En SQL Editor crear la tabla:
-       create table lashbook_data (id text primary key, data jsonb not null);
-  3. Crear las dos cuentas de acceso.
-  4. Configurar reglas RLS (políticas por fila) para la tabla.
-  5. Pegar abajo la URL del proyecto y la clave pública "anon".
-  ADVERTENCIA: la clave "anon" es pública y va dentro de este archivo. Sin inicio de sesión
-  y RLS bien configuradas, cualquiera que tenga este archivo puede leer y modificar la tabla.
-  Esta versión todavía no inicia sesión en Supabase; hay que agregarlo antes de guardar datos reales.
-  Mientras los campos estén vacíos, la app funciona solo en este dispositivo.
+  NUBE (SUPABASE), ya configurada:
+  - Tabla "lashbook_data" creada con RLS: solo una sesión iniciada puede leer o escribir.
+  - Las dos personas usan la misma cuenta de Supabase (correo y contraseña).
+  - La clave "publishable" es pública por diseño: sin sesión iniciada, la tabla no responde.
+  - El registro público de cuentas está desactivado en Supabase (Authentication → Sign In / Providers).
+  Si estos campos quedan vacíos, la app funciona solo en este dispositivo con contraseña local.
 */
 const CONFIG = {
-  supabaseUrl: "",        // ejemplo: "https://abcdxyz.supabase.co"
-  supabaseAnonKey: "",    // clave pública "anon" de Supabase
+  supabaseUrl: "https://lskqmmaxbxvpagnhvnhe.supabase.co",
+  supabaseAnonKey: "sb_publishable_vcAjUbmEDA6zS-yKjLDwhg_QdS3sn3q",
   table: "lashbook_data"
 };
 
@@ -112,6 +107,8 @@ const CURVATURAS = ["C", "CC", "D", "L", "M"];
 const EFECTOS = ["Natural", "Cat eye", "Doll eye", "Squirrel", "Wispy", "Wet look"];
 const SECCIONES = [8, 9, 10, 11, 12, 13];
 const MAX_FOTOS = 5;
+/* Lashistas que atienden. Para cambiar los nombres, edita esta lista (y úsala también en los filtros). */
+const LASHISTAS = ["Diana", "Lizbeth"];
 
 /* ===================== DEFINICIÓN DE CAMPOS ===================== */
 const CAMPOS = [
@@ -137,6 +134,7 @@ const CAMPOS = [
   {k:"medidas", l:"Medidas utilizadas por sección", t:"text"},
   {k:"medicamentos", l:"Medicamentos actuales", t:"area"},
   {k:"nombre", l:"Nombre completo", t:"text"},
+  {k:"responsable", l:"Clienta de", t:"seleccion", opciones: LASHISTAS},
   {k:"notas", l:"Notas adicionales", t:"area"},
   {k:"precio", l:"Precio cobrado", t:"text"},
   {k:"preferencias", l:"Preferencias personales (volumen, intensidad, longitud, efecto favorito, comodidad y estilos que no le gustan)", t:"area"},
@@ -169,8 +167,10 @@ let db = {version:0, nextFolio:1, clientas:[]};
 let auth = null;            // { salt, hash } o null
 let vista = {n:"inicio", id:null};
 let busqueda = "";
+let filtroClienta = "Todas";  // "Todas" o uno de LASHISTAS
 let fotosNuevas = [];       // [{tipo, src}]
 let baseVersion = 0;        // última versión sincronizada con la nube (o cargada localmente)
+let sesion = null;          // { access, refresh, expira, email } de Supabase Auth, o null
 
 /* ===================== UTILIDADES ===================== */
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -277,25 +277,71 @@ async function idbSet(k, v){
 
 /* ===================== NUBE (SUPABASE) ===================== */
 const nubeOn = () => Boolean(CONFIG.supabaseUrl && CONFIG.supabaseAnonKey);
+function errorSesion(msg){ const e = new Error(msg); e.sesionVencida = true; return e; }
+
+/* Guarda la sesión (token de acceso y de renovación) en este dispositivo */
+async function guardarSesionDe(j){
+  sesion = {
+    access: j.access_token,
+    refresh: j.refresh_token,
+    expira: Date.now() + Number(j.expires_in || 3600) * 1000,
+    email: (j.user && j.user.email) || ""
+  };
+  try { await idbSet("sesion", sesion); } catch (e) { /* sin almacenamiento: la sesión dura lo que la página */ }
+}
+/* Renueva el token cuando está por vencer. Un error de red no cierra la sesión. */
+async function asegurarSesion(){
+  if (!sesion) throw errorSesion("sin sesión");
+  if (sesion.expira - Date.now() > 60000) return;
+  const r = await fetch(`${CONFIG.supabaseUrl}/auth/v1/token?grant_type=refresh_token`, {
+    method: "POST",
+    headers: {apikey: CONFIG.supabaseAnonKey, "Content-Type": "application/json"},
+    body: JSON.stringify({refresh_token: sesion.refresh})
+  });
+  if (!r.ok) {
+    sesion = null;
+    try { await idbSet("sesion", null); } catch (e) {}
+    throw errorSesion("sesión vencida");
+  }
+  await guardarSesionDe(await r.json());
+}
 const nubeHeaders = (extra = {}) => ({
   apikey: CONFIG.supabaseAnonKey,
-  Authorization: "Bearer " + CONFIG.supabaseAnonKey,
+  Authorization: "Bearer " + sesion.access,
   "Content-Type": "application/json",
   ...extra
 });
 async function nubeLeer(){
+  await asegurarSesion();
   const r = await fetch(`${CONFIG.supabaseUrl}/rest/v1/${CONFIG.table}?id=eq.main&select=data`, {headers: nubeHeaders()});
   if (!r.ok) throw new Error("HTTP " + r.status);
   const f = await r.json();
   return f[0] ? f[0].data : null;
 }
 async function nubeEscribir(){
+  await asegurarSesion();
   const r = await fetch(`${CONFIG.supabaseUrl}/rest/v1/${CONFIG.table}?on_conflict=id`, {
     method: "POST",
     headers: nubeHeaders({Prefer: "resolution=merge-duplicates"}),
     body: JSON.stringify([{id: "main", data: db}])
   });
   if (!r.ok) throw new Error("HTTP " + r.status);
+}
+/* Inicio de sesión con correo y contraseña de Supabase. La contraseña no se guarda. */
+async function loginNube(email, pw){
+  let r;
+  try {
+    r = await fetch(`${CONFIG.supabaseUrl}/auth/v1/token?grant_type=password`, {
+      method: "POST",
+      headers: {apikey: CONFIG.supabaseAnonKey, "Content-Type": "application/json"},
+      body: JSON.stringify({email, password: pw})
+    });
+  } catch (e) {
+    return toast("Sin conexión. Revisa internet e intenta de nuevo.");
+  }
+  if (!r.ok) return toast("Correo o contraseña incorrectos");
+  await guardarSesionDe(await r.json());
+  await cargar();
 }
 
 /* ===================== CONTRASEÑA ===================== */
@@ -312,6 +358,7 @@ async function cargar(){
     if (local) db = normalizarDB(local);
   } catch (e) { /* sin datos locales todavía */ }
   if (nubeOn()) {
+    if (!sesion) return renderLock();
     try {
       const remoto = await nubeLeer();
       if (remoto && (Number(remoto.version) || 0) > (db.version || 0)) {
@@ -319,6 +366,7 @@ async function cargar(){
         await idbSet("db", db);
       }
     } catch (e) {
+      if (e.sesionVencida) return renderLock("Tu sesión venció. Vuelve a iniciar sesión.");
       toast("Sin conexión a la nube; se usan los datos de este teléfono");
     }
   }
@@ -361,13 +409,31 @@ async function guardar(){
     await nubeEscribir();
     baseVersion = db.version;
   } catch (e) {
-    toast("Guardado en este teléfono; la nube no respondió");
+    if (e.sesionVencida) toast("Tu sesión venció: el cambio sí quedó en este teléfono. Vuelve a iniciar sesión.");
+    else toast("Guardado en este teléfono; la nube no respondió");
   }
   return true;
 }
 
 /* ===================== ACCESO ===================== */
-function renderLock(){
+function renderLock(mensaje = ""){
+  /* Con la nube configurada, el acceso es con la cuenta de Supabase (correo y contraseña). */
+  if (nubeOn()) {
+    document.getElementById("app").innerHTML = `
+    <div class="centro"><div class="card">
+      <div class="brand" style="display:block;text-align:center">LASH BOOK</div>
+      <p class="aviso">${esc(mensaje) || "Inicia sesión con la cuenta compartida de LASH BOOK."}</p>
+      <label for="correo">Correo</label>
+      <input type="email" id="correo" autocomplete="username" autocapitalize="none" inputmode="email">
+      <label for="pw">Contraseña</label>
+      <input type="password" id="pw" autocomplete="current-password">
+      <div class="acciones" style="justify-content:center"><button class="btn primario" id="btn-entrar">Entrar</button></div>
+    </div></div>`;
+    document.getElementById("btn-entrar").onclick = entrar;
+    document.getElementById("pw").onkeydown = e => { if (e.key === "Enter") entrar(); };
+    document.getElementById("correo").onkeydown = e => { if (e.key === "Enter") document.getElementById("pw").focus(); };
+    return;
+  }
   const configurando = !auth;
   document.getElementById("app").innerHTML = `
   <div class="centro"><div class="card">
@@ -388,6 +454,11 @@ function pantallaError(texto){
 }
 async function entrar(){
   const pw = document.getElementById("pw").value;
+  if (nubeOn()) {
+    const correo = document.getElementById("correo").value.trim();
+    if (!correo || !pw) return toast("Escribe el correo y la contraseña");
+    return loginNube(correo, pw);
+  }
   if (!auth) {
     if (pw.length < 6) return toast("Mínimo 6 caracteres");
     if (pw !== document.getElementById("pw2").value) return toast("Las contraseñas no coinciden");
@@ -401,7 +472,12 @@ async function entrar(){
   }
   await cargar();
 }
-function cerrar(){ vista = {n: "inicio", id: null}; renderLock(); }
+async function cerrar(){
+  vista = {n: "inicio", id: null};
+  sesion = null;
+  try { await idbSet("sesion", null); } catch (e) {}
+  renderLock();
+}
 
 /* ===================== RENDER Y NAVEGACIÓN ===================== */
 function render(){
@@ -418,7 +494,8 @@ function ir(n, id = null){ vista = {n, id}; render(); window.scrollTo(0, 0); }
 function listaHTML(){
   const q = busqueda.trim().toLowerCase();
   const lista = db.clientas
-    .filter(c => !q || [c.nombre, c.apellido, String(c.folio), c.telefono].join(" ").toLowerCase().includes(q))
+    .filter(c => filtroClienta === "Todas" || c.responsable === filtroClienta)
+    .filter(c => !q || [c.nombre, c.apellido, String(c.folio), c.telefono, c.responsable].join(" ").toLowerCase().includes(q))
     .sort((a, b) => porLetra(a.nombre, b.nombre) || porLetra(a.apellido, b.apellido));
   if (!lista.length) {
     return `<p class="aviso" style="text-align:center;padding:20px">${db.clientas.length ? "Ninguna clienta coincide con la búsqueda." : "Sin clientas registradas todavía."}</p>`;
@@ -432,12 +509,13 @@ function listaHTML(){
     const retoque = due && due <= hoy() ? `<span class="badge">Retoque</span>` : "";
     html += `<div class="item" onclick="ir('ficha','${c.id}')">
       <div><b style="font-weight:500">${esc(c.nombre)} ${esc(c.apellido)}</b>${alerta}${retoque}<br>
-      <small>Expediente N° ${esc(c.folio)}${c.telefono ? " · " + esc(c.telefono) : ""}</small></div>
+      <small>Expediente N° ${esc(c.folio)}${c.responsable ? " · Clienta de " + esc(c.responsable) : ""}${c.telefono ? " · " + esc(c.telefono) : ""}</small></div>
       <span style="color:var(--dorado)">›</span></div>`;
   });
   return html;
 }
 function pintarLista(){ const el = document.getElementById("lista"); if (el) el.innerHTML = listaHTML(); }
+function cambiarFiltro(f){ filtroClienta = f; render(); }
 
 function vistaInicio(){
   const total = db.clientas.length;
@@ -448,6 +526,12 @@ function vistaInicio(){
   <div class="stats">
     <div class="stat"><b>${total}</b><span>Clientas registradas</span></div>
     <div class="stat"><b>${citas}</b><span>Citas realizadas</span></div>
+  </div>
+  <div class="acciones" role="group" aria-label="Filtrar clientas por lashista">
+    ${["Todas", ...LASHISTAS].map(f => {
+      const n = f === "Todas" ? total : db.clientas.filter(c => c.responsable === f).length;
+      return `<button class="btn pequeno ${filtroClienta === f ? "primario" : ""}" onclick="cambiarFiltro('${esc(f)}')">${esc(f)} (${n})</button>`;
+    }).join("")}
   </div>
   <p class="aviso">${nubeOn() ? "Sincronizado con la nube." : "Guardado solo en este teléfono. Falta configurar la nube para compartir."}</p>
   <div class="acciones">
@@ -468,6 +552,9 @@ function campoHTML(f, val){
   if (f.t === "area") return `${lbl}<textarea ${nom}>${esc(val)}</textarea>`;
   if (f.t === "fecha") return `${lbl}<input type="date" ${nom} value="${esc(val)}">`;
   if (f.t === "numero") return `${lbl}<input type="number" min="0" inputmode="numeric" ${nom} value="${esc(val)}">`;
+  if (f.t === "seleccion") {
+    return `${lbl}<select ${nom}><option value="">Selecciona una opción</option>${f.opciones.map(o => `<option value="${esc(o)}"${o === val ? " selected" : ""}>${esc(o)}</option>`).join("")}</select>`;
+  }
   if (f.t === "lista") {
     return `${lbl}<input type="text" ${nom} list="dl-${f.k}" placeholder="Escribe libremente o elige una sugerencia" value="${esc(val)}">
       <datalist id="dl-${f.k}">${f.opciones.map(o => `<option value="${esc(o)}"></option>`).join("")}</datalist>`;
@@ -511,6 +598,7 @@ function vistaEditar(id){
 async function guardarExpediente(id){
   const datos = leerCampos(document.getElementById("form"));
   if (!datos.nombre) return toast("Escribe el nombre");
+  if (!datos.responsable) return toast("Selecciona a quién corresponde la clienta");
   let c;
   if (id) {
     c = buscar(id);
@@ -820,9 +908,11 @@ function avisosRetoque(){
   }
   try {
     auth = await idbGet("auth");
+    sesion = nubeOn() ? await idbGet("sesion") : null;
   } catch (e) {
     return pantallaError("Este navegador no permite guardar datos. Usa Safari o Chrome actualizados.");
   }
+  if (nubeOn()) return cargar();
   renderLock();
 })();
 </script>
